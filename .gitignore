@@ -6,3 +6,7 @@ dist-ssr
 .env.local
 .DS_Store
 .netlify
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+.claude/settings.local.json
