@@ -64,7 +64,6 @@ export default function UploadReport() {
             <input
               type="file"
               accept="image/*"
-              capture="environment"
               className="mt-1 block w-full text-sm"
               disabled={stage.status === 'working'}
               onChange={(e) => {
