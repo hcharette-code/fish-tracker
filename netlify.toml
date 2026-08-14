@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+
+# SPA fallback so client-side routes (e.g. /catch-log) work on refresh/direct link
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
