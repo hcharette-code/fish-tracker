@@ -13,15 +13,22 @@ import type { PublicCatchLogRow } from '../../types/fish'
 import { SPECIES_LABELS } from '../../types/fish'
 import { CHART_INK, speciesColor } from '../../lib/chartTheme'
 import { groupByDate, presentSpecies } from '../../lib/catchLogAggregate'
+import { buildRiverGroups } from '../../lib/riverGroups'
 
 export default function ByRiverView({ rows }: { rows: PublicCatchLogRow[] }) {
-  const rivers = useMemo(() => Array.from(new Set(rows.map((r) => r.river))).sort(), [rows])
+  // Different spellings of the same river ("Atway" / "Atway River") are
+  // merged under one canonical label so they don't show up as separate rivers.
+  const riverGroups = useMemo(() => buildRiverGroups(rows), [rows])
+  const rivers = useMemo(
+    () => Array.from(new Set(rows.map((r) => riverGroups.get(r.river) ?? r.river))).sort(),
+    [rows, riverGroups]
+  )
   const [river, setRiver] = useState('')
 
   const effectiveRiver = river || rivers[0] || ''
   const filteredRows = useMemo(
-    () => rows.filter((r) => r.river === effectiveRiver),
-    [rows, effectiveRiver]
+    () => rows.filter((r) => (riverGroups.get(r.river) ?? r.river) === effectiveRiver),
+    [rows, riverGroups, effectiveRiver]
   )
   const chartData = useMemo(() => groupByDate(filteredRows), [filteredRows])
   const species = useMemo(() => presentSpecies(filteredRows), [filteredRows])

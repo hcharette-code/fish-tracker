@@ -7,6 +7,8 @@ import {
   type CatchCountDraft,
   type CatchEntryDraft,
 } from '../types/fish'
+import { useKnownRivers } from '../hooks/useKnownRivers'
+import { suggestRiver } from '../lib/riverGroups'
 
 export interface TripDraft {
   groupName: string
@@ -188,6 +190,7 @@ export default function CatchReportForm({
   )
   const [fieldErrors, setFieldErrors] = useState<string[]>([])
   const [submit, setSubmit] = useState<SubmitState>({ status: 'idle' })
+  const knownRivers = useKnownRivers()
 
   // Keeps day dates in sync with the Trip date range so you only ever type a
   // date once: changing the trip start date renames whichever day block was
@@ -533,6 +536,23 @@ export default function CatchReportForm({
                       onChange={(e) => updateRiver(dayIdx, riverIdx, { river: e.target.value })}
                       placeholder="e.g. Dean River"
                     />
+                    {(() => {
+                      const suggestion = suggestRiver(river.river, knownRivers)
+                      if (!suggestion) return null
+                      return (
+                        <p className="mt-1 text-xs text-amber-700">
+                          Did you mean{' '}
+                          <button
+                            type="button"
+                            className="underline hover:text-amber-900"
+                            onClick={() => updateRiver(dayIdx, riverIdx, { river: suggestion })}
+                          >
+                            {suggestion}
+                          </button>
+                          ?
+                        </p>
+                      )
+                    })()}
                   </label>
                   <label className="block text-sm">
                     <span className="text-slate-600">

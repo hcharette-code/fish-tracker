@@ -3,11 +3,13 @@ import { supabase } from '../lib/supabaseClient'
 import type { PublicCatchLogRow } from '../types/fish'
 import ByRiverView from '../components/catchlog/ByRiverView'
 import ByDateView from '../components/catchlog/ByDateView'
+import BySpeciesView from '../components/catchlog/BySpeciesView'
 import AllEntriesView from '../components/catchlog/AllEntriesView'
 
 const TABS = [
   { id: 'byRiver', label: 'By River' },
   { id: 'byDate', label: 'By Date' },
+  { id: 'bySpecies', label: 'By Species' },
   { id: 'all', label: 'All Entries' },
 ] as const
 
@@ -74,6 +76,7 @@ export default function CatchLog() {
         <>
           {tab === 'byRiver' && <ByRiverView rows={rows} />}
           {tab === 'byDate' && <ByDateView rows={rows} />}
+          {tab === 'bySpecies' && <BySpeciesView rows={rows} />}
           {tab === 'all' && <AllEntriesView rows={rows} />}
         </>
       )}
