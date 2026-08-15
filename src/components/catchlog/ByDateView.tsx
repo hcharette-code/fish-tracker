@@ -14,16 +14,18 @@ import { SPECIES_LABELS } from '../../types/fish'
 import { CHART_INK, speciesColor } from '../../lib/chartTheme'
 import { groupByRiver, presentSpecies } from '../../lib/catchLogAggregate'
 
-function todayIso() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+function defaultSeasonRange() {
+  const year = new Date().getFullYear()
+  return { start: `${year}-06-01`, end: `${year}-10-31` }
 }
 
 export default function ByDateView({ rows }: { rows: PublicCatchLogRow[] }) {
-  const [startDate, setStartDate] = useState(todayIso())
-  const [endDate, setEndDate] = useState('')
+  const season = defaultSeasonRange()
+  const [startDate, setStartDate] = useState(season.start)
+  const [endDate, setEndDate] = useState(season.end)
 
   const effectiveEnd = endDate || startDate
+  const isDefaultRange = startDate === season.start && endDate === season.end
   const filteredRows = useMemo(
     () => rows.filter((r) => r.entry_date >= startDate && r.entry_date <= effectiveEnd),
     [rows, startDate, effectiveEnd]
@@ -37,7 +39,7 @@ export default function ByDateView({ rows }: { rows: PublicCatchLogRow[] }) {
     <div className="space-y-4">
       <section className="flex flex-wrap items-end gap-4 rounded-lg border border-slate-200 bg-white p-4">
         <label className="text-sm">
-          <span className="block text-slate-600">Date</span>
+          <span className="block text-slate-600">From date</span>
           <input
             type="date"
             className="mt-1 rounded-md border border-slate-300 px-3 py-2"
@@ -46,15 +48,26 @@ export default function ByDateView({ rows }: { rows: PublicCatchLogRow[] }) {
           />
         </label>
         <label className="text-sm">
-          <span className="block text-slate-600">Through (optional, for a range)</span>
+          <span className="block text-slate-600">To date</span>
           <input
             type="date"
             className="mt-1 rounded-md border border-slate-300 px-3 py-2"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            placeholder={startDate}
           />
         </label>
+        {!isDefaultRange && (
+          <button
+            type="button"
+            className="text-sm text-slate-600 underline"
+            onClick={() => {
+              setStartDate(season.start)
+              setEndDate(season.end)
+            }}
+          >
+            Reset to this season (Jun–Oct)
+          </button>
+        )}
       </section>
 
       <section className="rounded-lg border border-slate-200 bg-white p-4">
